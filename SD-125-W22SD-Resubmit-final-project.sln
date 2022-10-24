@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SD_340_W22SD_2021_2022___Final_Project_2_UnitTests", "SD_340_W22SD_2021_2022___Final_Project_2_UnitTests\SD_340_W22SD_2021_2022___Final_Project_2_UnitTests.csproj", "{7C8F8DE9-674B-4A48-BA2C-393FC6E152FE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SD-340-W22SD-2021-2022 - Final Project 2", "SD-340-W22SD-2021-2022 - Final Project 2\SD-340-W22SD-2021-2022 - Final Project 2.csproj", "{EE5CA5D4-B6C1-49E2-A588-DB3E2DA68415}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7C8F8DE9-674B-4A48-BA2C-393FC6E152FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C8F8DE9-674B-4A48-BA2C-393FC6E152FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C8F8DE9-674B-4A48-BA2C-393FC6E152FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C8F8DE9-674B-4A48-BA2C-393FC6E152FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE5CA5D4-B6C1-49E2-A588-DB3E2DA68415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE5CA5D4-B6C1-49E2-A588-DB3E2DA68415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE5CA5D4-B6C1-49E2-A588-DB3E2DA68415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE5CA5D4-B6C1-49E2-A588-DB3E2DA68415}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4EFA01C0-9174-4C3D-97E1-60F42CFE11B7}
+	EndGlobalSection
+EndGlobal

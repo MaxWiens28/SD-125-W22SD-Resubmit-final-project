@@ -1,0 +1,162 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_2021_2022___Final_Project_2.BLL;
+using SD_340_W22SD_2021_2022___Final_Project_2.DAL;
+using SD_340_W22SD_2021_2022___Final_Project_2.Data;
+using SD_340_W22SD_2021_2022___Final_Project_2.Models;
+using SD_340_W22SD_2021_2022___Final_Project_2.Models.ViewModels;
+
+namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
+{
+    [Authorize]
+    public class TicketController : Controller
+    {
+        private readonly TicketBusinessLogic ticketBL;
+        private readonly ProjectBusinessLogic projectBL;
+        private readonly UserBusinessLogic userBL;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public TicketController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            ticketBL = new TicketBusinessLogic(new TicketRepository(context));
+            projectBL = new ProjectBusinessLogic(new ProjectRepository(context), userManager);
+            userBL = new UserBusinessLogic(userManager);
+            _userManager = userManager;
+        }
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Project Manager")]
+        public async Task<IActionResult> Create(int projectId)
+        {
+            Project? project = projectBL.GetProjectById(projectId);
+
+            if (project == null)
+            {
+                return BadRequest();
+            }
+
+            List<ApplicationUser>? developers = project.Developers.ToList();
+            CreateTicketViewModel vm;
+            Ticket ticket = new Ticket();
+
+            vm = new CreateTicketViewModel(project, ticket, developers);
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Project Manager")]
+        public async Task<IActionResult> Create(
+            [Bind("Id, Completed, Name, Hours, Priority, ProjectId, Project")] Ticket ticket,
+            int projectId, string[] taskOwnerIds, Priority priority = Priority.low)
+        {
+            //This returns invalid because ModelState.Project is null
+            //if (!ModelState.IsValid)
+            //{
+            //    return RedirectToAction("Create", new { projectId = projectId });
+            //}
+
+            ApplicationUser dev = new ApplicationUser();
+
+            if (taskOwnerIds.Count() == 0)
+            {
+                return RedirectToAction("Create", new { projectId = projectId });
+            }
+
+            foreach (string taskOwnerId in taskOwnerIds)
+            {
+               dev = await _userManager.FindByIdAsync(taskOwnerId);
+            }
+
+            ticketBL.CreateAndSaveTicket(ticket, priority, projectId, taskOwnerIds, dev);
+
+
+            return RedirectToAction("Index", "Project");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ToggleTicket(int projectId, int ticketId)
+        {
+            try
+            {
+                ApplicationUser currentUser = userBL.GetCurrentUserByName(User.Identity.Name);
+                Ticket ticket = ticketBL.FindTicketById(ticketId);
+
+                if (ticket.TaskOwners.FirstOrDefault(to => to.Id == currentUser.Id) == null)
+                {
+                    return Unauthorized("Only developers who are a task owner of this project can mark a task as complete");
+                }
+
+                ticket.Completed = !ticket.Completed;
+
+                ticketBL.UpdateTicket(ticket);
+                ticketBL.SaveTicket();
+
+                return RedirectToAction("Details", "Project", new { projectId = projectId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeRequiredHours(int projectId, int ticketId, int hours)
+        {
+            try
+            {
+                ApplicationUser currentUser = userBL.GetCurrentUserByName(User.Identity.Name);
+                Ticket ticket = ticketBL.FindTicketById(ticketId);
+
+                if (ticket.TaskOwners.FirstOrDefault(to => to.Id == currentUser.Id) == null)
+                {
+                    return Unauthorized("Only developers who are a task owner of this project can adjust required hours of a task");
+                }
+
+                ticket.Hours = hours;
+
+                ticketBL.UpdateTicket(ticket);
+                ticketBL.SaveTicket();
+
+                return RedirectToAction("Details", "Project", new { projectId = projectId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToWatchList(int projectId, int ticketId)
+        {
+            try
+            {
+                ApplicationUser currentUser = userBL.GetCurrentUserByName(User.Identity.Name);
+                Project project = projectBL.GetProjectById(projectId);
+                Ticket ticket = ticketBL.FindTicketById(ticketId);
+
+                if (project.Developers.FirstOrDefault(d => d.Id == currentUser.Id) == null)
+                {
+                    return Unauthorized("Only developers assigned to this project can watch the tasks");
+                }
+
+                ticketBL.AddOrRemoveWatcher(ticket, currentUser);
+
+                ticketBL.UpdateTicket(ticket);
+                ticketBL.SaveTicket();
+
+                return RedirectToAction("Details", "Project", new { projectId = projectId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+
+            }
+        }
+    }
+}
