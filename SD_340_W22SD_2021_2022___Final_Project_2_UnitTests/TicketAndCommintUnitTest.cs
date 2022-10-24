@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace SD_340_W22SD_2021_2022___Final_Project_2_UnitTests
 {
     [TestClass]
-    public class BLUnitTest
+    public class TicketAndCommintUnitTest
     {
         // hello world
         private UserBusinessLogic UserBL;
@@ -38,7 +38,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2_UnitTests
             {
             }
         }
-        public BLUnitTest()
+        public TicketAndCommintUnitTest()
         {
             var userdata = new List<ApplicationUser>
             {
